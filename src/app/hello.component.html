@@ -1,4 +1,7 @@
-<div *ngIf="show" style="margin: 1rem 1rem;">
+<div
+  style="margin: 1rem 1rem;"
+  [@expandNoHide]="{ value: show, params: { height: 'auto' } }"
+>
   <label for="in1">Input : </label>
-  <input id="in1" />
+  <input [disabled]="!show" id="in1" autofocus [focus]="show" />
 </div>
