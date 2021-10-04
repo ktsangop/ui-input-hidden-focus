@@ -4,7 +4,9 @@ import { Directive, ElementRef } from '@angular/core';
   selector: '[autofocus2]',
 })
 export class Autofocus2Directive {
-  constructor(private host: ElementRef) {}
+  constructor(private host: ElementRef) {
+    console.log('construct');
+  }
 
   ngAfterViewInit() {
     console.log('after view??');

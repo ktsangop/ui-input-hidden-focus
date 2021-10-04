@@ -12,10 +12,16 @@ export class AppComponent {
     this.uiService.showInput$.subscribe((show) => (this.show = show));
   }
   name = 'Angular ' + VERSION.major;
+  timeoutSec = null;
 
   onTrigger() {
-    // setTimeout(() =>
-    this.uiService.setShowInput(!this.show);
-    // , 0);
+    if (this.timeoutSec === null) {
+      this.uiService.setShowInput(!this.show);
+    } else {
+      setTimeout(
+        () => this.uiService.setShowInput(!this.show),
+        this.timeoutSec
+      );
+    }
   }
 }
