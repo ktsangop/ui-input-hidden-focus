@@ -14,6 +14,8 @@ export class AppComponent {
   name = 'Angular ' + VERSION.major;
 
   onTrigger() {
+    // setTimeout(() =>
     this.uiService.setShowInput(!this.show);
+    // , 0);
   }
 }
