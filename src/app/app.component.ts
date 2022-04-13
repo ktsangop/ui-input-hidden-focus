@@ -56,8 +56,8 @@ export class AppComponent {
       ),
     ])
       .pipe(
-        filter(([account, _void]) => account.isInstantiated),
         switchMap(() => this.account$),
+        filter((account) => account.isInstantiated),
         mergeMap(() => of(null))
       )
       .subscribe(() =>
