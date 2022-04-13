@@ -33,20 +33,31 @@ export class AppComponent {
     }
   }
 
+  /**
+   * =======================
+   * Account Coupons refresh
+   * =======================
+   */
   account$ = new BehaviorSubject<any>({ isInstantiated: false });
   coupoRefresh$ = new Subject<void>();
 
   ngOnInit() {
     const textOutput = document.querySelector(`#textOutput`);
     combineLatest([
-      this.account$.pipe(tap(() => textOutput.append('account updated\n'))),
+      this.account$.pipe(
+        tap((ac) =>
+          textOutput.append(
+            `account updated, logged in : ${ac.isInstantiated}\n`
+          )
+        )
+      ),
       this.coupoRefresh$.pipe(
         tap(() => textOutput.append('coupon reload triggered\n'))
       ),
     ])
       .pipe(
         filter(([account, _void]) => account.isInstantiated),
-        // switchMap(() => this.account$),
+        switchMap(() => this.account$),
         mergeMap(() => of(null))
       )
       .subscribe(() =>
