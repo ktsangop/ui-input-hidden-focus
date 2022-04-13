@@ -5,6 +5,7 @@ import {
   filter,
   mergeMap,
   switchMap,
+  take,
   tap,
 } from 'rxjs/operators';
 import { UiService } from './ui.service';
@@ -43,8 +44,11 @@ export class AppComponent {
 
   ngOnInit() {
     const textOutput = document.querySelector(`#textOutput`);
+
     combineLatest([
       this.account$.pipe(
+        filter((account) => account.isInstantiated),
+        take(1),
         tap((ac) =>
           textOutput.append(
             `account updated, logged in : ${ac.isInstantiated}\n`
@@ -56,13 +60,14 @@ export class AppComponent {
       ),
     ])
       .pipe(
-        switchMap(() => this.account$),
-        filter((account) => account.isInstantiated),
+        // switchMap(() => this.account$),
         mergeMap(() => of(null))
       )
       .subscribe(() =>
         textOutput.append('>> CALL TO REFRESH COUPONS FROM SERVER <<\n')
       );
+
+    this.onCouponsReload();
   }
 
   onAccountUpdate() {
