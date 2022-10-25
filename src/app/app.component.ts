@@ -1,5 +1,5 @@
 import { Component, VERSION } from '@angular/core';
-import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, noop, of, Subject } from 'rxjs';
 import {
   combineLatestAll,
   filter,
@@ -43,6 +43,7 @@ export class AppComponent {
   coupoRefresh$ = new Subject<void>();
 
   ngOnInit() {
+    this.combineBsubjects();
     const textOutput = document.querySelector(`#textOutput`);
 
     combineLatest([
@@ -76,5 +77,26 @@ export class AppComponent {
 
   onCouponsReload() {
     this.coupoRefresh$.next();
+  }
+
+  combineBsubjects() {
+    const merchantName$: BehaviorSubject<string> = new BehaviorSubject('');
+    const themeName$: BehaviorSubject<string> = new BehaviorSubject('main');
+    const productName$: BehaviorSubject<string> = new BehaviorSubject(
+      'Customer App'
+    );
+
+    combineLatest([
+      merchantName$.pipe(filter((n) => !!n)),
+      themeName$,
+      productName$,
+    ])
+      .pipe(tap(() => console.log('refresh will trigger')))
+      .subscribe(noop, noop);
+
+    setTimeout(() => merchantName$.next('Marcos'), 1000);
+    setTimeout(() => merchantName$.next('Preview'), 5000);
+    setTimeout(() => merchantName$.next('Marcos'), 10000);
+    // setTimeout(() => merchantName$.next('Preview'), 15000);
   }
 }
