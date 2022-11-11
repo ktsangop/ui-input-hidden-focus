@@ -7,9 +7,15 @@ import { HelloComponent } from './hello.component';
 import { AutofocusDirective } from './auto-focus.directive';
 import { Autofocus2Directive } from './auto-focus-2.directive';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  imports: [BrowserModule, FormsModule, BrowserAnimationsModule],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+  ],
   declarations: [
     AppComponent,
     HelloComponent,

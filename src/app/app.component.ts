@@ -1,9 +1,19 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, VERSION } from '@angular/core';
-import { BehaviorSubject, combineLatest, noop, of, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  exhaustMap,
+  noop,
+  of,
+  Subject,
+  switchMapTo,
+} from 'rxjs';
 import {
   combineLatestAll,
   filter,
   mergeMap,
+  sample,
   switchMap,
   take,
   tap,
@@ -17,7 +27,7 @@ import { UiService } from './ui.service';
 })
 export class AppComponent {
   show = false;
-  constructor(private uiService: UiService) {
+  constructor(private uiService: UiService, private http: HttpClient) {
     this.uiService.showInput$.subscribe((show) => (this.show = show));
   }
   name = 'Angular ' + VERSION.major;
@@ -40,7 +50,9 @@ export class AppComponent {
    * =======================
    */
   account$ = new BehaviorSubject<any>({ isInstantiated: false });
+  account2$ = new Subject<void>();
   coupoRefresh$ = new Subject<void>();
+  coupoRefresh2$ = new Subject<void>();
 
   ngOnInit() {
     this.combineBsubjects();
@@ -75,8 +87,16 @@ export class AppComponent {
     this.account$.next({ isInstantiated: true });
   }
 
+  onAccountUpdate2() {
+    this.account2$.next();
+  }
+
   onCouponsReload() {
     this.coupoRefresh$.next();
+  }
+
+  onCouponsReload2() {
+    this.coupoRefresh2$.next();
   }
 
   combineBsubjects() {
@@ -98,5 +118,24 @@ export class AppComponent {
     setTimeout(() => merchantName$.next('Preview'), 5000);
     setTimeout(() => merchantName$.next('Marcos'), 10000);
     // setTimeout(() => merchantName$.next('Preview'), 15000);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    combineLatest([this.account2$, this.coupoRefresh2$])
+      .pipe(
+        // take(1) is the only way to unsubscribe from source after the first emission...
+        take(1),
+        // switchMap DOES NOT "SWITCH" to the inner observable
+        // It just ensures that there are no multiple subscriptions allowed to the inner observable
+        // Thus if we try to resubscribe to the inner observable before it completes, rxjs unsubscribes from the
+        // inner observable automatically (think of an http request cancelled...)
+        switchMap(() =>
+          this.http.get('https://www.fishwatch.gov/api/species/red-snapper')
+        )
+      )
+      .subscribe(() => {
+        const textOutput = document.querySelector(`#textOutput`);
+        textOutput.append('>> GET DOG FACTS! <<\n');
+      });
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
   }
 }
